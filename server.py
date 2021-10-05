@@ -1,15 +1,18 @@
 import asyncio
 import json
-import time
-from datetime import datetime
-import subprocess
-import os
 import random
 import traceback
 import websockets
 import dotenv
 import os
 
+# display
+# from digitalio import DigitalInOut
+# import adafruit_ssd1306
+# import busio
+# import board
+
+# load .env file
 dotenv.load_dotenv()
 
 
@@ -22,6 +25,40 @@ class Logger:
             print(message)
 
 
+class Display:
+    def __init__(self):
+        self.environment = os.environ.get('environment')
+        self.available_display = self.environment == 'raspberry'
+        if self.available_display:
+
+            from digitalio import DigitalInOut
+            import adafruit_ssd1306
+            import busio
+            import board
+
+            # Create the I2C interface.
+            i2c = busio.I2C(board.SCL, board.SDA)
+
+            # 128x32 OLED Display
+            reset_pin = DigitalInOut(board.D4)
+            self.display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, reset=reset_pin)
+            # Clear the display.
+            self.display.fill(0)
+            self.display.show()
+            self.width = self.display.width
+            self.height = self.display.height
+        else:
+            self.display = None
+
+    def print(self, message):
+        if self.available_display:
+            self.display.text(message, 0, 0, 1)
+            self.display.show()
+        else:
+            print('show on display:')
+            print(message)
+
+
 class Server:
 
     def __init__(self):
@@ -30,6 +67,7 @@ class Server:
         # asyncio.run(self.main())
         self.loop = asyncio.get_event_loop()
         self.log = Logger()
+        self.display = Display()
         self.log.print('You have to know what you are doing...')
         self.websocket_clients = set()
         self.start()
@@ -38,8 +76,8 @@ class Server:
         try:
             if "display" in json_message:
                 display_message = json_message['display']
-                # todo: print the message to the display.
-                self.log.print(f'print on display: {display_message}')
+                # self.log.print(f'print on display: {display_message}')
+                self.display.print(display_message)
         except:
             self.log.print('problems with json input...')
             self.log.print(traceback.format_exc())
