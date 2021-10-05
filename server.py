@@ -42,11 +42,11 @@ class Server:
 
     async def handle_socket_connection(self, websocket, path):
         self.websocket_clients.add(websocket)
-        print(f'New connection from: {websocket.remote_address} ({len(self.websocket_clients)} total)')
+        self.log.print(f'New connection from: {websocket.remote_address} ({len(self.websocket_clients)} total)')
         try:
             # This loop will keep listening on the socket until its closed.
             async for raw_message in websocket:
-                print(f'Got: [{raw_message}] from socket [{id(websocket)}]')
+                self.log.print(f'Got: [{raw_message}] from socket [{id(websocket)}]')
                 try:
                     input = json.loads(raw_message)
                     self.handle_json_input(input)
@@ -58,7 +58,7 @@ class Server:
         except websockets.exceptions.ConnectionClosedError as cce:
             pass
         finally:
-            print(f'Disconnected from socket [{id(websocket)}]...')
+            self.log.print(f'Disconnected from socket [{id(websocket)}]...')
             self.websocket_clients.remove(websocket)
 
     async def broadcast_random_number(self, loop):
@@ -66,49 +66,20 @@ class Server:
         while True:
             for c in self.websocket_clients:
                 num = str(random.randint(10, 20))
-                print(f'Sending [{num}] to socket [{id(c)}]')
+                self.log.print(f'Sending [{num}] to socket [{id(c)}]')
                 await c.send(num)
             await asyncio.sleep(10)
 
     def start(self):
         try:
             socket_server = websockets.serve(self.handle_socket_connection, 'localhost', 8820)
-            print(f'Started socket server: {socket_server} ...')
+            self.log.print(f'Started socket server: {socket_server} ...')
             self.loop.run_until_complete(socket_server)
             self.loop.run_until_complete(self.broadcast_random_number(self.loop))
             self.loop.run_forever()
         finally:
             self.loop.close()
-            print(f"Successfully shutdown [{self.loop}].")
-
-    # async def hello(self, websocket, path):
-    #     print(datetime.now().time())
-    #     dataRaw = await websocket.recv()
-    #     print(dataRaw)
-    #     data = json.loads(dataRaw)
-    #     print(data)
-    #     print(f"<<< {data.get('number')}")
-    #
-    #     dataProcessed = {'number': data.get('number')}
-    #
-    #     await websocket.send(json.dumps(dataProcessed))
-    #     print(f">>> {dataProcessed}")
-    #
-    #     # subprocess.run([self.python, self.path + '/numbers.py', str(data.get('number'))])
-    #     subprocess.Popen([self.python, self.path + '/numbers.py', str(data.get('number'))])
-    #
-    #     await websocket.send("another sending.")
-    #     print('end')
-    #
-    # async def listen(self, websocket, path):
-    #     dataRaw = await websocket.recv()
-    #     print(dataRaw)
-    #
-    # async def main(self):
-    #     async with websockets.serve(self.hello, "localhost", 8820):
-    #         await asyncio.Future()  # run forever
-    #     async with websockets.serve(self.listen, "localhost/listen", 8820):
-    #         await asyncio.Future()
+            self.log.print(f"Successfully shutdown [{self.loop}].")
 
 
 def server():
