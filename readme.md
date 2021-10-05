@@ -21,6 +21,19 @@ $ cp example.env .env
 $ nano .env
 ```
 
+Connect the raspberry pi with the [LoRa Bonnet from adafruit](https://learn.adafruit.com/adafruit-radio-bonnets/rfm69-raspberry-pi-setup):
+
+```shell
+$ pip3 install adafruit-circuitpython-ssd1306
+$ sudo pip3 install adafruit-circuitpython-framebuf
+```
+
+Test everything needed on the Raspberry Pi:
+
+```shell
+$ python3 test_server.py
+```
+
 ## Server
 
 ### Start
