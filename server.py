@@ -52,6 +52,7 @@ class Display:
 
     def print(self, message):
         if self.available_display:
+            self.display.fill(0)
             self.display.text(message, 0, 0, 1)
             self.display.show()
         else:
@@ -68,7 +69,8 @@ class Server:
         self.loop = asyncio.get_event_loop()
         self.log = Logger()
         self.display = Display()
-        self.log.print('You have to know what you are doing...')
+        self.display.print('server up and running')
+        # self.log.print('You have to know what you are doing...')
         self.websocket_clients = set()
         self.start()
 
