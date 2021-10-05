@@ -53,11 +53,11 @@ class Display:
     def print(self, message):
         if self.available_display:
             self.display.fill(0)
-            self.display.text(message, 0, 0, 1)
+            self.display.text(str(message), 0, 0, 1)
             self.display.show()
         else:
             print('show on display:')
-            print(message)
+            print(str(message))
 
 
 class Server:
