@@ -12,17 +12,3 @@ With this server, it should be possible to establish a connection between a Rasp
 ```shell
 $ pip3 install websockets
 ```
-
-### alte variante
-
-Variante https://github.com/MrYsLab/s3-extend/blob/master/setup.py
-
-```shell
-$ pip3 install psutil
-$ pip3 install python-banyan
-$ pip3 install pymata-express
-$ pip3 install pymata-cpx
-$ pip3 install pymata_rh
-$ pip3 install tmx-pico-aio
-$ pip3 install telemetrix-aio
-```
