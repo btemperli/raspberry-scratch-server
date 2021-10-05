@@ -34,7 +34,14 @@ print('')
 # adafruit radio bonnet tests
 # @see https://learn.adafruit.com/adafruit-radio-bonnets/rfm9x-raspberry-pi-setup
 print('-------------------------')
-print('start checking display')
+print('start checking bonnet')
+print('')
+print('check the display now')
+print('check the buttons now')
+print('')
+print('stop with CTRL+C')
+print('')
+print('-------------------------')
 
 # Button A
 btnA = DigitalInOut(board.D5)
