@@ -30,12 +30,12 @@ class Server:
         self.websocket_clients = set()
         self.start()
 
-    def handle_json_input(self, input):
+    def handle_json_message(self, json_message):
         try:
-            if "display" in input:
-                message = input['display']
+            if "display" in json_message:
+                display_message = json_message['display']
                 # todo: print the message to the display.
-                self.log.print(f'print on display: {message}')
+                self.log.print(f'print on display: {display_message}')
         except:
             self.log.print('problems with json input...')
             self.log.print(traceback.format_exc())
@@ -48,8 +48,8 @@ class Server:
             async for raw_message in websocket:
                 self.log.print(f'Got: [{raw_message}] from socket [{id(websocket)}]')
                 try:
-                    input = json.loads(raw_message)
-                    self.handle_json_input(input)
+                    decoded_message = json.loads(raw_message)
+                    self.handle_json_message(decoded_message)
                 except json.decoder.JSONDecodeError:
                     self.log.print('json decoding: Error. Wrong json format.')
                 except:
