@@ -35,6 +35,8 @@ Connect the raspberry pi with the [LoRa Bonnet from adafruit](https://learn.adaf
 ```shell
 $ pip3 install adafruit-circuitpython-ssd1306
 $ sudo pip3 install adafruit-circuitpython-framebuf
+$ sudo pip3 install adafruit-circuitpython-rfm9x
+$ wget https://github.com/adafruit/Adafruit_CircuitPython_framebuf/raw/main/examples/font5x8.bin
 ```
 
 Test everything needed on the Raspberry Pi:
