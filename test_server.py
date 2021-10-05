@@ -6,7 +6,8 @@ print('Running some tests to check packages, libraries & adafruit bonnet')
 
 # blinka-tests
 # @see https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
-print('Hello blinka!')
+print('-------------------------')
+print('blinka-test is running...')
 
 # Try to great a Digital input
 pin = digitalio.DigitalInOut(board.D4)
@@ -20,4 +21,6 @@ print('I2C ok!')
 spi = busio.SPI(board.SCLK, board.MOSI, board.MISO)
 print('SPI ok!')
 
-print('done!')
+print('...blinka-test successful')
+print('-------------------------')
+

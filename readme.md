@@ -7,6 +7,15 @@ With this server, it should be possible to establish a connection between a Rasp
 
 ## Setup
 
+Prepare Raspberry Pi:
+
+- enable `Interface Options` / `I2C`
+- enable `Interface Options` / `SPI`
+
+```shell
+$ sudo raspi-config
+```
+
 Install required packages:
 
 ```shell
