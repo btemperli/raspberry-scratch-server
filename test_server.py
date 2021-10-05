@@ -1,3 +1,5 @@
+import sys
+
 import digitalio
 import time
 import busio
@@ -75,35 +77,43 @@ CS = DigitalInOut(board.CE1)
 RESET = DigitalInOut(board.D25)
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
-while True:
-    # Clear the image
+try:
+    run = True
+    while run:
+        # Clear the image
+        display.fill(0)
+
+        # Attempt to set up the RFM9x Module
+        try:
+            rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.0)
+            display.text('RFM9x: Detected', 0, 0, 1)
+        except RuntimeError as error:
+            # Thrown on version mismatch
+            display.text('RFM9x: ERROR', 0, 0, 1)
+            print('RFM9x Error: ', error)
+
+        # Check buttons
+        if not btnA.value:
+            # Button A Pressed
+            display.text('Ada', width-85, height-7, 1)
+            display.show()
+            time.sleep(0.1)
+        if not btnB.value:
+            # Button B Pressed
+            display.text('Fruit', width-75, height-7, 1)
+            display.show()
+            time.sleep(0.1)
+        if not btnC.value:
+            # Button C Pressed
+            display.text('Radio', width-65, height-7, 1)
+            display.show()
+            time.sleep(0.1)
+
+        display.show()
+        time.sleep(0.1)
+except KeyboardInterrupt:
+    print('')
+    print('...goodbye...')
     display.fill(0)
-
-    # Attempt to set up the RFM9x Module
-    try:
-        rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.0)
-        display.text('RFM9x: Detected', 0, 0, 1)
-    except RuntimeError as error:
-        # Thrown on version mismatch
-        display.text('RFM9x: ERROR', 0, 0, 1)
-        print('RFM9x Error: ', error)
-
-    # Check buttons
-    if not btnA.value:
-        # Button A Pressed
-        display.text('Ada', width-85, height-7, 1)
-        display.show()
-        time.sleep(0.1)
-    if not btnB.value:
-        # Button B Pressed
-        display.text('Fruit', width-75, height-7, 1)
-        display.show()
-        time.sleep(0.1)
-    if not btnC.value:
-        # Button C Pressed
-        display.text('Radio', width-65, height-7, 1)
-        display.show()
-        time.sleep(0.1)
-
     display.show()
-    time.sleep(0.1)
+    sys.exit()
