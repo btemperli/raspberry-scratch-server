@@ -7,6 +7,10 @@ import os
 import random
 import traceback
 import websockets
+import dotenv
+import os
+
+dotenv.load_dotenv()
 
 
 class Logger:
@@ -72,7 +76,10 @@ class Server:
 
     def start(self):
         try:
-            socket_server = websockets.serve(self.handle_socket_connection, 'localhost', 8820)
+            socket_server = websockets.serve(
+                self.handle_socket_connection,
+                os.environ.get('server-ip'),
+                os.environ.get('server-port'))
             self.log.print(f'Started socket server: {socket_server} ...')
             self.loop.run_until_complete(socket_server)
             self.loop.run_until_complete(self.broadcast_random_number(self.loop))

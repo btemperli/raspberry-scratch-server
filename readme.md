@@ -7,10 +7,18 @@ With this server, it should be possible to establish a connection between a Rasp
 
 ## Setup
 
-### Variante Websockets
+Install required packages:
 
 ```shell
 $ pip3 install websockets
+$ pip3 install python-dotenv
+```
+
+Create a `.env` file and edit its content: 
+
+```shell
+$ cp example.env .env
+$ nano .env
 ```
 
 ## Server
