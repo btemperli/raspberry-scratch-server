@@ -26,7 +26,8 @@ class Logger:
 
 
 class LoRa:
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         self.environment = os.environ.get('environment')
         self.available_lora = self.environment == 'raspberry'
         self.prev_package = None
@@ -46,7 +47,7 @@ class LoRa:
 
     def read(self):
         if not self.available_lora:
-            print('Nothing to receive on a computer...')
+            self.logger.print('Nothing to receive on a computer...')
             return None
 
         packet = self.rfm9x.receive()
@@ -54,19 +55,21 @@ class LoRa:
             # do nothing, no message read.
             return None
         else:
-            print('------')
-            print(packet)
+            self.logger.print('------')
+            self.logger.print(packet)
             self.prev_packet = packet
             packet_text = str(self.prev_packet, "utf-8")
-            print(packet_text)
+            self.logger.print(packet_text)
             return packet_text
 
     def send(self, message):
+        message_data = bytes(message, encoding="utf-8")
+
         if not self.available_lora:
-            print(str('send message', message))
+            self.logger.print('send text: ' + message)
+            self.logger.print('send bytes: ' + str(message_data))
             return
 
-        message_data = bytes(message + "utf-8")
         self.rfm9x.send(message_data)
 
 
@@ -113,7 +116,7 @@ class Server:
         self.loop = asyncio.get_event_loop()
         self.log = Logger()
         self.display = Display()
-        self.lora = LoRa()
+        self.lora = LoRa(self.log)
         self.display.print('server up and running')
         self.websocket_clients = set()
         self.start()
@@ -126,7 +129,6 @@ class Server:
             if "send" in json_message:
                 send_message = json_message['send']
                 self.lora.send(send_message)
-                self.display.print(str('sending:', '\n\r', send_message))
         except:
             self.log.print('problems with json input...')
             self.log.print(traceback.format_exc())
