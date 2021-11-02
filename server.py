@@ -25,12 +25,57 @@ class Logger:
             print(message)
 
 
+class LoRa:
+    def __init__(self):
+        self.environment = os.environ.get('environment')
+        self.available_lora = self.environment == 'raspberry'
+        self.prev_package = None
+        if self.available_lora:
+            from digitalio import DigitalInOut
+            import busio
+            import board
+            import adafruit_ssd1306
+            import adafruit_rfm9x
+
+            # Configure LoRa Radio
+            CS = DigitalInOut(board.CE1)
+            RESET = DigitalInOut(board.D25)
+            spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+            self.rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.1)
+            self.rfm9x.tx_power = 23
+
+    def read(self):
+        if not self.available_lora:
+            print('Nothing to receive on a computer...')
+            return None
+
+        packet = self.rfm9x.receive()
+        if packet is None:
+            # do nothing, no message read.
+            return None
+        else:
+            print('------')
+            print(packet)
+            self.prev_packet = packet
+            packet_text = str(self.prev_packet, "utf-8")
+            print(packet_text)
+            return packet_text
+
+    def send(self, message):
+        if not self.available_lora:
+            print(str('send message', message))
+            return
+
+        message_data = bytes(message + "utf-8")
+        self.rfm9x.send(message_data)
+
+
 class Display:
     def __init__(self):
         self.environment = os.environ.get('environment')
         self.available_display = self.environment == 'raspberry'
-        if self.available_display:
 
+        if self.available_display:
             from digitalio import DigitalInOut
             import adafruit_ssd1306
             import busio
@@ -65,12 +110,11 @@ class Server:
     def __init__(self):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.python = '/usr/local/bin/python3'
-        # asyncio.run(self.main())
         self.loop = asyncio.get_event_loop()
         self.log = Logger()
         self.display = Display()
+        self.lora = LoRa()
         self.display.print('server up and running')
-        # self.log.print('You have to know what you are doing...')
         self.websocket_clients = set()
         self.start()
 
@@ -78,8 +122,11 @@ class Server:
         try:
             if "display" in json_message:
                 display_message = json_message['display']
-                # self.log.print(f'print on display: {display_message}')
                 self.display.print(display_message)
+            if "send" in json_message:
+                send_message = json_message['send']
+                self.lora.send(send_message)
+                self.display.print(str('sending:', '\n\r', send_message))
         except:
             self.log.print('problems with json input...')
             self.log.print(traceback.format_exc())

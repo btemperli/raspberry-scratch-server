@@ -111,6 +111,7 @@ try:
 
         display.show()
         time.sleep(0.1)
+
 except KeyboardInterrupt:
     print('')
     print('...goodbye...')

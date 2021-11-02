@@ -72,3 +72,4 @@ You can communicate with the server by sending json:
 | key | handling | example |
 |:---:| --- | --- |
 | `display` | shows a message on the [screen](https://www.adafruit.com/product/4074) of the raspberry pi | `{"display": "some output"}`
+| `send` | sends a message via the [LoRa-Node](https://www.adafruit.com/product/4074) of the raspberry pi | `{"send": "a message"}`
