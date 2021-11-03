@@ -102,9 +102,8 @@ class Display:
         if self.available_display:
             self.display.fill(0)
 
-            # def text(self, string, x, y, color, *, font_name="font5x8.bin", size=1):
             # prevent missing font files
-            self.display.text(str(message), 0, 0, 1, font_name="/home/pi/raspberry-scratch-server/font5x8.bin")
+            self.display.text(str(message), 0, 0, 1)
             self.display.show()
         else:
             print('show on display:')
