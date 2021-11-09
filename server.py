@@ -5,6 +5,21 @@ import traceback
 import websockets
 import dotenv
 import os
+import signal
+import sys
+
+
+# handle exit command comming from bash-script.
+# https://stackoverflow.com/a/24574672/2241151
+def sigterm_handler(_signo, _stack_frame):
+    # Raises SystemExit(0):
+    print('sigterm_handler', flush=True)
+    print(_signo, flush=True)
+    sys.exit(0)
+
+
+if len(sys.argv) > 1 and sys.argv[1] == "handle_exit_signal":
+    signal.signal(signal.SIGTERM, sigterm_handler)
 
 # display
 # from digitalio import DigitalInOut
@@ -22,7 +37,7 @@ class Logger:
 
     def print(self, message):
         if self.debug:
-            print(message)
+            print(message, flush=True)
 
 
 class LoRa:
@@ -30,7 +45,7 @@ class LoRa:
         self.logger = logger
         self.environment = os.environ.get('environment')
         self.available_lora = self.environment == 'raspberry'
-        self.prev_package = None
+        self.prev_packet = None
         if self.available_lora:
             from digitalio import DigitalInOut
             import busio
