@@ -41,8 +41,10 @@ while True:
         display.text('waiting', 15, 20, 1)
         display.show()
     else:
+        rssi = rfm9x.last_rssi
         print('------')
-        print(packet)
+        print('received:', packet)
+        print('signal strength:', rssi, 'db')
         prev_packet = packet
         packet_text = str(prev_packet, "utf-8")
         print(packet_text)
