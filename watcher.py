@@ -38,7 +38,6 @@ while True:
     # check for packet rx
     packet = rfm9x.receive(with_header=True)
     if packet is None:
-        print('waiting')
         display.text('waiting', 15, 20, 1)
         display.show()
     else:
@@ -62,7 +61,7 @@ while True:
         #
         # todo: check if we should send mac-address from server as first entry and read it out here.
         # or better: the kids need to define this by themselves and sending it with the message.
-        
+
         header = prev_packet[:4]
         header_text = str(header, 'utf-16')
         print('header:', header)
