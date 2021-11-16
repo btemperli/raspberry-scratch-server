@@ -44,7 +44,7 @@ while True:
         rssi = rfm9x.last_rssi
         print('------')
         print('received:', packet)
-        print('signal strength:', rssi, 'db')
+        print('signal strength:', rssi, 'dBm')
         prev_packet = packet
         packet_text = str(prev_packet, "utf-8")
         print(packet_text)
