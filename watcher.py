@@ -36,8 +36,9 @@ while True:
     display.fill(0)
 
     # check for packet rx
-    packet = rfm9x.receive()
+    packet = rfm9x.receive(with_header=True)
     if packet is None:
+        print('waiting')
         display.text('waiting', 15, 20, 1)
         display.show()
     else:
@@ -46,8 +47,30 @@ while True:
         print('received:', packet)
         print('signal strength:', rssi, 'dBm')
         prev_packet = packet
-        packet_text = str(prev_packet, "utf-8")
-        print(packet_text)
+        # header
+        #
+        # node = packet[0] // broadcast: 255 (xff)
+        # node: If not 255 (0xff) then only packets address to this node will be accepted.
+        #
+        # destination = packet[1] // breadcast: 255 (xff)
+        # destination: If 255 (0xff) then any receiving node should accept the packet.
+        #
+        # identifier = packet[2] // default: x00
+        # identifier: Automatically set to the sequence number when send_with_ack() used.
+        #
+        # flags = packet[3] // default: x00
+        #
+        # todo: check if we should send mac-address from server as first entry and read it out here.
+        # or better: the kids need to define this by themselves and sending it with the message.
+        
+        header = prev_packet[:4]
+        header_text = str(header, 'utf-16')
+        print('header:', header)
+        print('header:', header_text)
+        packet_text = str(prev_packet[4:], "utf-8")
+
+        print('packet:', prev_packet[4:])
+        print('packet:', packet_text)
         display.text('RX: ', 0, 0, 1)
         display.text(packet_text, 25, 0, 1)
         display.show()
