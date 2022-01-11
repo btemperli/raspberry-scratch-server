@@ -19,7 +19,7 @@ $ sudo raspi-config
 Install required packages:
 
 ```shell
-$ sudo pip install -r requirements.txt
+$ sudo pip3 install -r requirements.txt
 ```
 
 Create a `.env` file and edit its content: 
