@@ -11,6 +11,7 @@ Author: Brent Rubell for Adafruit Industries
 import time
 import busio
 from digitalio import DigitalInOut, Direction, Pull
+from getmac import get_mac_address
 import board
 import adafruit_ssd1306
 import adafruit_rfm9x
@@ -38,9 +39,13 @@ btnC.pull = Pull.UP
 # Create the I2C interface.
 i2c = busio.I2C(board.SCL, board.SDA)
 
+# Prepare the MAC address
+eth_mac = get_mac_address(interface="eth0")
+
 # 128x32 OLED Display
 reset_pin = DigitalInOut(board.D4)
 display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, reset=reset_pin)
+
 # Clear the display.
 display.fill(0)
 display.show()
@@ -79,19 +84,19 @@ while True:
     if not btnA.value:
         # Send Button A
         display.fill(0)
-        button_a_data = bytes("Button A!\r\n","utf-8")
+        button_a_data = bytes("[" + eth_mac + "]Button A!\r\n", "utf-8")
         rfm9x.send(button_a_data)
         display.text('Sent Button A!', 25, 15, 1)
     elif not btnB.value:
         # Send Button B
         display.fill(0)
-        button_b_data = bytes("Button B!\r\n","utf-8")
+        button_b_data = bytes("[" + eth_mac + "]Button B!\r\n", "utf-8")
         rfm9x.send(button_b_data)
         display.text('Sent Button B!', 25, 15, 1)
     elif not btnC.value:
         # Send Button C
         display.fill(0)
-        button_c_data = bytes("Button C!\r\n","utf-8")
+        button_c_data = bytes("[" + eth_mac + "]Button C!\r\n", "utf-8")
         rfm9x.send(button_c_data)
         display.text('Sent Button C!', 25, 15, 1)
 
