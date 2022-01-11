@@ -1,0 +1,5 @@
+python-dotenv==0.19.2
+websockets==10.1
+adafruit-circuitpython-ssd1306==2.12.3
+adafruit-circuitpython-rfm9x==2.2.2
+adafruit-circuitpython-framebuf==1.4.8

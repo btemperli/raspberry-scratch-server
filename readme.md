@@ -19,8 +19,7 @@ $ sudo raspi-config
 Install required packages:
 
 ```shell
-$ pip3 install websockets
-$ pip3 install python-dotenv
+$ sudo pip install -r requirements.txt
 ```
 
 Create a `.env` file and edit its content: 
@@ -33,9 +32,6 @@ $ nano .env
 Connect the raspberry pi with the [LoRa Bonnet from adafruit](https://learn.adafruit.com/adafruit-radio-bonnets/rfm69-raspberry-pi-setup):
 
 ```shell
-$ pip3 install adafruit-circuitpython-ssd1306
-$ sudo pip3 install adafruit-circuitpython-framebuf
-$ sudo pip3 install adafruit-circuitpython-rfm9x
 $ wget https://github.com/adafruit/Adafruit_CircuitPython_framebuf/raw/main/examples/font5x8.bin
 ```
 
@@ -73,3 +69,20 @@ You can communicate with the server by sending json:
 |:---:| --- | --- |
 | `display` | shows a message on the [screen](https://www.adafruit.com/product/4074) of the raspberry pi | `{"display": "some output"}`
 | `send` | sends a message via the [LoRa-Node](https://www.adafruit.com/product/4074) of the raspberry pi | `{"send": "a message"}`
+
+
+## Updates
+
+### Requirements
+
+You can add used packages to the `requirements.txt` in the root-folder. Use the following command to show all installed packages:
+
+```shell
+$ sudo pip freeze
+```
+
+You can update a specific package with the following command:
+
+```shell
+$ sudo pip install --upgrade adafruit-circuitpython-rfm9x
+```
