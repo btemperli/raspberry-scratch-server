@@ -4,6 +4,7 @@
 import time
 import busio
 from digitalio import DigitalInOut, Direction, Pull
+import re
 import board
 import adafruit_ssd1306
 import adafruit_rfm9x
@@ -66,11 +67,20 @@ while True:
         header_text = str(header, 'utf-16')
         print('header:', header)
         print('header:', header_text)
-        packet_text = str(prev_packet[4:], "utf-8")
 
-        print('packet:', prev_packet[4:])
-        print('packet:', packet_text)
-        display.text('RX: ', 0, 0, 1)
-        display.text(packet_text, 25, 0, 1)
+        packet_text = str(prev_packet[4:], "utf-8")
+        address = re.findall('\[([a-z0-9:])*\]', packet_text)
+
+        if address:
+            print('packet from', address, ':', prev_packet[4:])
+            print('packet from', address, ':', packet_text)
+            display.text('RX: ', 0, 0, 1)
+            display.text(packet_text, 25, 0, 1)
+
+        else:
+            print('packet:', prev_packet[4:])
+            print('packet:', packet_text)
+            display.text('RX: ', 0, 0, 1)
+            display.text(packet_text, 25, 0, 1)
         display.show()
         time.sleep(1)
