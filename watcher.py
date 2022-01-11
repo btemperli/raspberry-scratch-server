@@ -69,10 +69,12 @@ while True:
         print('header:', header_text)
 
         packet_text = str(prev_packet[4:], "utf-8")
-        address = re.findall(r'/\[([a-z0-9:])*\]/g', packet_text)
-        print(address)
+        pattern = r'\[([a-z0-9:])*\]'
+        matches = re.match(pattern, packet_text)
 
-        if address:
+        if matches:
+            address = matches.group()
+            packet_text = re.sub(pattern, '', packet_text)
             print('packet from', address, ':', prev_packet[4:])
             print('packet from', address, ':', packet_text)
             display.text('RX: ', 0, 0, 1)
