@@ -16,6 +16,9 @@ i2c = busio.I2C(board.SCL, board.SDA)
 reset_pin = DigitalInOut(board.D4)
 display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, reset=reset_pin)
 
+# Identifiers
+address_set = set([])
+
 # Clear the display.
 display.fill(0)
 display.show()
@@ -74,6 +77,7 @@ while True:
 
         if matches:
             address = matches.group()
+            address_set.add(address)
             packet_text = re.sub(pattern, '', packet_text)
             print('packet from', address, ':', prev_packet[4:])
             print('packet from', address, ':', packet_text)

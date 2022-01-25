@@ -4,3 +4,4 @@ adafruit-circuitpython-ssd1306==2.12.3
 adafruit-circuitpython-rfm9x==2.2.2
 adafruit-circuitpython-framebuf==1.4.8
 getmac==0.8.3
+pygame==2.0.1
