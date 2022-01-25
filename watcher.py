@@ -8,86 +8,114 @@ import re
 import board
 import adafruit_ssd1306
 import adafruit_rfm9x
+from threading import Thread
+from WatchOutput import WatchOutput
 
-# Create the I2C interface.
-i2c = busio.I2C(board.SCL, board.SDA)
 
-# 128x32 OLED Display
-reset_pin = DigitalInOut(board.D4)
-display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, reset=reset_pin)
+class WatchLora(Thread):
 
-# Identifiers
-address_set = set([])
+    def __init__(self, watch_output):
+        super().__init__()
 
-# Clear the display.
-display.fill(0)
-display.show()
-width = display.width
-height = display.height
+        # Create the I2C interface.
+        i2c = busio.I2C(board.SCL, board.SDA)
 
-# Configure LoRa Radio
-CS = DigitalInOut(board.CE1)
-RESET = DigitalInOut(board.D25)
-spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.1)
-rfm9x.tx_power = 23
-prev_packet = None
+        # 128x32 OLED Display
+        reset_pin = DigitalInOut(board.D4)
+        self.display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, reset=reset_pin)
 
-while True:
-    packet = None
+        # Identifiers
+        self.address_set = set([])
 
-    # draw a box to clear the image
-    display.fill(0)
+        # Clear the display.
+        self.display.fill(0)
+        self.display.show()
+        width = self.display.width
+        height = self.display.height
 
-    # check for packet rx
-    packet = rfm9x.receive(with_header=True)
-    if packet is None:
-        display.text('waiting', 15, 20, 1)
-        display.show()
-    else:
-        rssi = rfm9x.last_rssi
-        print('------')
-        print('received:', packet)
-        print('signal strength:', rssi, 'dBm')
-        prev_packet = packet
-        # header
-        #
-        # node = packet[0] // broadcast: 255 (xff)
-        # node: If not 255 (0xff) then only packets address to this node will be accepted.
-        #
-        # destination = packet[1] // breadcast: 255 (xff)
-        # destination: If 255 (0xff) then any receiving node should accept the packet.
-        #
-        # identifier = packet[2] // default: x00
-        # identifier: Automatically set to the sequence number when send_with_ack() used.
-        #
-        # flags = packet[3] // default: x00
-        #
-        # todo: check if we should send mac-address from server as first entry and read it out here.
-        # or better: the kids need to define this by themselves and sending it with the message.
+        # Configure LoRa Radio
+        CS = DigitalInOut(board.CE1)
+        RESET = DigitalInOut(board.D25)
+        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+        self.rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.1)
+        self.rfm9x.tx_power = 23
 
-        header = prev_packet[:4]
-        header_text = str(header, 'utf-16')
-        print('header:', header)
-        print('header:', header_text)
+        self.watchOutput = watch_output
 
-        packet_text = str(prev_packet[4:], "utf-8")
-        pattern = r'\[([a-z0-9:])*\]'
-        matches = re.match(pattern, packet_text)
+    def watch(self):
+        prev_packet = None
 
-        if matches:
-            address = matches.group()
-            address_set.add(address)
-            packet_text = re.sub(pattern, '', packet_text)
-            print('packet from', address, ':', prev_packet[4:])
-            print('packet from', address, ':', packet_text)
-            display.text('RX: ', 0, 0, 1)
-            display.text(packet_text, 25, 0, 1)
+        while True:
+            packet = None
 
-        else:
-            print('packet:', prev_packet[4:])
-            print('packet:', packet_text)
-            display.text('RX: ', 0, 0, 1)
-            display.text(packet_text, 25, 0, 1)
-        display.show()
-        time.sleep(1)
+            # draw a box to clear the image
+            self.display.fill(0)
+
+            # check for packet rx
+            packet = self.rfm9x.receive(with_header=True)
+            if packet is None:
+                self.display.text('waiting', 15, 20, 1)
+                self.display.show()
+            else:
+                rssi = self.rfm9x.last_rssi
+                print('------')
+                print('received:', packet)
+                print('signal strength:', rssi, 'dBm')
+                prev_packet = packet
+                # header
+                #
+                # node = packet[0] // broadcast: 255 (xff)
+                # node: If not 255 (0xff) then only packets address to this node will be accepted.
+                #
+                # destination = packet[1] // breadcast: 255 (xff)
+                # destination: If 255 (0xff) then any receiving node should accept the packet.
+                #
+                # identifier = packet[2] // default: x00
+                # identifier: Automatically set to the sequence number when send_with_ack() used.
+                #
+                # flags = packet[3] // default: x00
+                #
+                # todo: check if we should send mac-address from server as first entry and read it out here.
+                # or better: the kids need to define this by themselves and sending it with the message.
+
+                header = prev_packet[:4]
+                header_text = str(header, 'utf-16')
+                print('header:', header)
+                print('header:', header_text)
+
+                packet_text = str(prev_packet[4:], "utf-8")
+                pattern = r'\[([a-z0-9:])*\]'
+                matches = re.match(pattern, packet_text)
+
+                if matches:
+                    address = matches.group()
+                    self.address_set.add(address)
+                    packet_text = re.sub(pattern, '', packet_text)
+                    print('packet from', address, ':', prev_packet[4:])
+                    print('packet from', address, ':', packet_text)
+                    self.display.text('RX: ', 0, 0, 1)
+                    self.display.text(packet_text, 25, 0, 1)
+                    self.watchOutput.add_message(address, packet_text)
+
+                else:
+                    print('packet:', prev_packet[4:])
+                    print('packet:', packet_text)
+                    self.display.text('RX: ', 0, 0, 1)
+                    self.display.text(packet_text, 25, 0, 1)
+                    self.watchOutput.add_message('unknown', packet_text)
+
+                self.display.show()
+
+
+class Manager:
+    def __init__(self):
+        watch_output = WatchOutput()
+
+        watch_lora = WatchLora(watch_output)
+        watch_lora.setDaemon(True)
+        watch_lora.start()
+        watch_output.run()
+
+
+if __name__ == '__main__':
+    Manager()
