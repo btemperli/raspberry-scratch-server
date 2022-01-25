@@ -21,12 +21,6 @@ def sigterm_handler(_signo, _stack_frame):
 if len(sys.argv) > 1 and sys.argv[1] == "handle_exit_signal":
     signal.signal(signal.SIGTERM, sigterm_handler)
 
-# display
-# from digitalio import DigitalInOut
-# import adafruit_ssd1306
-# import busio
-# import board
-
 # load .env file
 dotenv.load_dotenv()
 
@@ -78,13 +72,13 @@ class LoRa:
         if packet is None:
             # do nothing, no message read.
             return None
-        else:
-            self.logger.print('------')
-            self.logger.print(packet)
-            self.prev_packet = packet
-            packet_text = str(self.prev_packet, "utf-8")
-            self.logger.print(packet_text)
-            return packet_text
+
+        self.logger.print('------')
+        self.logger.print(packet)
+        self.prev_packet = packet
+        packet_text = str(self.prev_packet, "utf-8")
+        self.logger.print(packet_text)
+        return packet_text
 
     def send(self, message):
         message_data = bytes(message, encoding="utf-8")
@@ -155,6 +149,7 @@ class Server:
             if "send" in json_message:
                 send_message = json_message['send']
                 self.lora.send(send_message)
+
         except:
             self.log.print('problems with json input...')
             self.log.print(traceback.format_exc())
@@ -162,6 +157,7 @@ class Server:
     async def handle_socket_connection(self, websocket, path):
         self.websocket_clients.add(websocket)
         self.log.print(f'New connection from: {websocket.remote_address} ({len(self.websocket_clients)} total)')
+
         try:
             # This loop will keep listening on the socket until its closed.
             async for raw_message in websocket:
@@ -169,13 +165,17 @@ class Server:
                 try:
                     decoded_message = json.loads(raw_message)
                     self.handle_json_message(decoded_message)
+
                 except json.decoder.JSONDecodeError:
                     self.log.print('json decoding: Error. Wrong json format.')
+
                 except:
                     self.log.print(traceback.format_exc())
                     self.log.print('json reading was not possible')
+
         except websockets.exceptions.ConnectionClosedError as cce:
             pass
+
         finally:
             self.log.print(f'Disconnected from socket [{id(websocket)}]...')
             self.websocket_clients.remove(websocket)
@@ -199,6 +199,7 @@ class Server:
             self.loop.run_until_complete(socket_server)
             self.loop.run_until_complete(self.broadcast_random_number(self.loop))
             self.loop.run_forever()
+
         finally:
             self.loop.close()
             self.log.print(f"Successfully shutdown [{self.loop}].")
