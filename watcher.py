@@ -98,12 +98,14 @@ class WatchLora(Thread):
             packet = self.rfm9x.receive(with_header=True)
 
             if packet is not None:
-                rssi = self.rfm9x.last_rssi
-                print('------')
-                print('received:', packet)
-                print('signal strength:', rssi, 'dBm')
+                t = Thread(target=self.handle_packet, args=packet)
+                t.start()
 
-                self.handle_packet(packet)
+                # rssi = self.rfm9x.last_rssi
+                # print('------')
+                # print('received:', packet)
+                # print('signal strength:', rssi, 'dBm')
+
                 packet = None
 
 
