@@ -86,3 +86,16 @@ You can update a specific package with the following command:
 ```shell
 $ sudo pip install --upgrade adafruit-circuitpython-rfm9x
 ```
+
+
+## Bugs
+
+### Font Module
+
+```python
+⚠️ NotImplementedError: font module not available (ImportError: libSDL2_ttf-2.0.so.0: cannot open shared object file: No such file or directory)
+```
+
+#### Solution
+
+    $ sudo apt install libsdl2-ttf-2.0-0
