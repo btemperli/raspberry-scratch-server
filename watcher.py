@@ -118,11 +118,14 @@ class Manager:
     def __init__(self):
         print('init manager. starting up...')
         watch_output = WatchOutput()
-        watch_output.run()
 
+        # start thread
         watch_lora = WatchLora(watch_output)
         watch_lora.setDaemon(True)
         watch_lora.start()
+
+        # start all non-threaded functions
+        watch_output.run()
 
 
 if __name__ == '__main__':

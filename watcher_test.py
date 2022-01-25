@@ -41,6 +41,7 @@ class Manager:
         watch_updater = WatchUpdater(watch_output)
         watch_updater.setDaemon(True)
         watch_updater.start()
+
         watch_output.run()
 
 
