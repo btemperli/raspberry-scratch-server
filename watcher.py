@@ -42,8 +42,10 @@ class WatchLora(Thread):
 
         self.watchOutput = watch_output
 
-    def watch(self):
+    def run(self):
         prev_packet = None
+        self.display.text('ready.', 15, 20, 1)
+        self.display.show()
 
         while True:
             packet = None
@@ -54,8 +56,8 @@ class WatchLora(Thread):
             # check for packet rx
             packet = self.rfm9x.receive(with_header=True)
             if packet is None:
-                self.display.text('waiting', 15, 20, 1)
-                self.display.show()
+                # do nothing
+                print('waiting')
             else:
                 rssi = self.rfm9x.last_rssi
                 print('------')
@@ -108,17 +110,17 @@ class WatchLora(Thread):
                     self.watchOutput.add_message('unknown', packet_text)
 
                 self.display.show()
-                time.sleep(1)
 
 
 class Manager:
     def __init__(self):
+        print('init manager. starting up...')
         watch_output = WatchOutput()
+        watch_output.run()
 
         watch_lora = WatchLora(watch_output)
         watch_lora.setDaemon(True)
         watch_lora.start()
-        watch_output.run()
 
 
 if __name__ == '__main__':
