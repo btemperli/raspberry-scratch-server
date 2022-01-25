@@ -41,8 +41,10 @@ class WatchLora(Thread):
         self.rfm9x.tx_power = 23
 
         self.watchOutput = watch_output
+        print('watch.py initialized.')
 
     def run(self):
+        print('run watcher.py')
         prev_packet = None
         self.display.text('ready.', 15, 20, 1)
         self.display.show()

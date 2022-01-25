@@ -79,6 +79,7 @@ class WatchOutput:
     # ---
     # Thread-based function to start the watcher.
     def run(self):
+        print('run WatchOutput.py')
         self.__start()
 
     # draw display
