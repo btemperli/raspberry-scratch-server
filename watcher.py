@@ -49,7 +49,7 @@ class WatchLora(Thread):
             packet = None
 
             # draw a box to clear the image
-            self.display.fill(0)
+            # self.display.fill(0)
 
             # check for packet rx
             packet = self.rfm9x.receive(with_header=True)
@@ -86,7 +86,9 @@ class WatchLora(Thread):
                 packet_text = str(prev_packet[4:], "utf-8")
                 pattern = r'\[([a-z0-9:])*\]'
                 matches = re.match(pattern, packet_text)
+                self.display.fill(0)
 
+                # Address is available in the packet
                 if matches:
                     address = matches.group()
                     self.address_set.add(address)
@@ -97,6 +99,7 @@ class WatchLora(Thread):
                     self.display.text(packet_text, 25, 0, 1)
                     self.watchOutput.add_message(address, packet_text)
 
+                # No address found.
                 else:
                     print('packet:', prev_packet[4:])
                     print('packet:', packet_text)
@@ -105,6 +108,7 @@ class WatchLora(Thread):
                     self.watchOutput.add_message('unknown', packet_text)
 
                 self.display.show()
+                time.sleep(1)
 
 
 class Manager:
