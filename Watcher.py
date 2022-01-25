@@ -89,7 +89,7 @@ class WatchLora(Thread):
         self.display.show()
 
     def run(self):
-        print('run watcher.py')
+        print('run Watcher.py')
         self.display.text('ready.', 15, 20, 1)
         self.display.show()
 
