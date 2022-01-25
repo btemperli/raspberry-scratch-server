@@ -46,6 +46,7 @@ class LoRa:
         self.environment = os.environ.get('environment')
         self.available_lora = self.environment == 'raspberry'
         self.prev_packet = None
+
         if self.available_lora:
             from digitalio import DigitalInOut
             import busio
