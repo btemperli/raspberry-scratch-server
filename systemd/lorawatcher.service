@@ -6,7 +6,7 @@
  Type=simple
  Environment="DISPLAY=:0"
  Environment="XAUTHORITY=/home/pi/.Xauthority"
- ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py
+ ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py > /home/pi/watcher.log
  KillMode=process
  SendSIGHUP=no
  Restart=always
