@@ -4,8 +4,11 @@
 
  [Service]
  Type=simple
- KillMode=process
  ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py
+ KillMode=process
+ SendSIGHUP=no
+ Restart=on-abort
+ RestartSec=5
 
  [Install]
  WantedBy=graphical.target
