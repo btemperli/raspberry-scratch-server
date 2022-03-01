@@ -7,6 +7,7 @@ import dotenv
 import os
 import signal
 import sys
+from getmac import get_mac_address
 
 
 # handle exit command comming from bash-script.
@@ -54,6 +55,7 @@ class LoRa:
             spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
             self.rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.1)
             self.rfm9x.tx_power = 23
+            self.eth_mac = get_mac_address(interface="eth0")
 
             # possible configuration
             # @see https://circuitpython.readthedocs.io/projects/rfm9x/en/latest/
@@ -81,7 +83,7 @@ class LoRa:
         return packet_text
 
     def send(self, message):
-        message_data = bytes(message, encoding="utf-8")
+        message_data = bytes("[" + self.eth_mac + "]"+message, encoding="utf-8")
 
         if not self.available_lora:
             self.logger.print('send text: ' + message)
