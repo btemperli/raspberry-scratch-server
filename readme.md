@@ -116,4 +116,5 @@ A second module in this project is the watcher. With the watcher, you can watch 
 
 Now add the following line before the screensaver line:
 
+    @sudo sh /home/pi/raspberry-scratch-server/system/launcher.sh    
     @/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py > /home/pi/watcher.log 2>&1
