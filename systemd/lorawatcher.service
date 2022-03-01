@@ -3,8 +3,9 @@
  After=multi-user.target
 
  [Service]
- Type=idle
+ Type=simple
+ KillMode=process
  ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py
 
  [Install]
- WantedBy=multi-user.target
+ WantedBy=graphical.target
