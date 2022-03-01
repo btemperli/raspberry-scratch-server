@@ -112,6 +112,8 @@ A second module in this project is the watcher. With the watcher, you can watch 
 
 ## Autorun watcher on start
 
-    $ sudo cp ./systemd/lorawatcher.service /lib/systemd/system/lorawatcher.service
-    $ sudo systemctl daemon-reload
-    $ sudo systemctl enable lorawatcher.service
+    $ sudo crontab -e
+
+Now add the following line
+
+    @reboot sh /home/pi/raspberry-scratch-server/system/launcher.sh >/home/pi/watcher.log 2>&1
