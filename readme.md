@@ -113,3 +113,5 @@ A second module in this project is the watcher. With the watcher, you can watch 
 ## Autorun watcher on start
 
     $ sudo cp ./systemd/lorawatcher.service /lib/systemd/system/lorawatcher.service
+    $ sudo systemctl daemon-reload
+    $ sudo systemctl enable lorawatcher.service
