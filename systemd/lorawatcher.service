@@ -4,7 +4,7 @@
 
  [Service]
  Type=idle
- ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-serverWatcher.py
+ ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py
 
  [Install]
  WantedBy=multi-user.target
