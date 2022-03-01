@@ -56,6 +56,7 @@ class LoRa:
             self.rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, 868.1)
             self.rfm9x.tx_power = 23
             self.eth_mac = get_mac_address(interface="eth0")
+            self.logger.print('found mac address:', self.eth_mac)
 
             # possible configuration
             # @see https://circuitpython.readthedocs.io/projects/rfm9x/en/latest/
