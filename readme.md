@@ -116,4 +116,4 @@ A second module in this project is the watcher. With the watcher, you can watch 
 
 Now add the following line
 
-    @reboot sh /home/pi/raspberry-scratch-server/system/launcher.sh >/home/pi/watcher.log 2>&1
+    @reboot sh /home/pi/raspberry-scratch-server/system/launcher.sh > /home/pi/watcher.log 2>&1
