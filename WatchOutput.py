@@ -3,6 +3,8 @@
 # Author: Beat Temperli
 import pygame
 import math
+import os
+import dotenv
 
 
 # WatchOutput
@@ -25,6 +27,8 @@ class WatchOutput:
     def __init__(self):
         super().__init__()
 
+        dotenv.load_dotenv()
+
         self.pg = pygame
         self.pg.init()
         self.pg.font.init()
@@ -34,7 +38,7 @@ class WatchOutput:
 
         self.pg.display.set_caption('LoRaWatcher')
         self.show_screen = False
-        self.small_font = self.pg.font.Font('./Asap.ttf', 20)
+        self.small_font = self.pg.font.Font(os.environ.get('watcher-dir') + 'Asap.ttf', 20)
         self.small_font_line_height = 20
         self.color_light = (220, 220, 220)
         self.color_dark = (35, 35, 35)

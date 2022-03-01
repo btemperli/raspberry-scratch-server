@@ -83,9 +83,7 @@ $ sudo pip freeze
 
 You can update a specific package with the following command:
 
-```shell
-$ sudo pip install --upgrade adafruit-circuitpython-rfm9x
-```
+    $ sudo pip install --upgrade adafruit-circuitpython-rfm9x
 
 
 ## Bugs
@@ -99,3 +97,19 @@ $ sudo pip install --upgrade adafruit-circuitpython-rfm9x
 #### Solution
 
     $ sudo apt install libsdl2-ttf-2.0-0
+
+---
+
+# Watcher
+
+A second module in this project is the watcher. With the watcher, you can watch the sending streams from the different scratch-server-applications.
+
+## Run watcher
+
+    $ python3 Watcher.py
+
+*You cannot run the Watcher from an external console, because it needs a display to show the incoming messages.*
+
+## Autorun watcher on start
+
+    $ sudo cp ./systemd/lorawatcher.service ./lib/systemd/system/lorawatcher.service
