@@ -7,6 +7,8 @@ import re
 import board
 import adafruit_ssd1306
 import adafruit_rfm9x
+import os
+import dotenv
 from threading import Thread
 from WatchOutput import WatchOutput
 
@@ -15,6 +17,8 @@ class WatchLora(Thread):
 
     def __init__(self, watch_output):
         super().__init__()
+
+        dotenv.load_dotenv()
 
         # Create the I2C interface.
         i2c = busio.I2C(board.SCL, board.SDA)
@@ -39,6 +43,9 @@ class WatchLora(Thread):
 
         self.watchOutput = watch_output
         print('watch.py initialized.')
+
+    def write_to_display(self, text, x, y):
+        self.display.text(text, x, y, 1, font_name=os.environ.get('watcher-dir') + 'font5x8.bin')
 
     def handle_packet(self, packet):
         # header
@@ -74,23 +81,23 @@ class WatchLora(Thread):
             packet_text = re.sub(pattern, '', packet_text)
             print('packet from', address, ':', packet[4:])
             print('packet from', address, ':', packet_text)
-            self.display.text('RX: ', 0, 0, 1)
-            self.display.text(packet_text, 25, 0, 1)
+            self.write_to_display('RX: ', 0, 0)
+            self.write_to_display(packet_text, 25, 0)
             self.watchOutput.add_message(address, packet_text)
 
         # No address found.
         else:
             print('packet:', packet[4:])
             print('packet:', packet_text)
-            self.display.text('RX: ', 0, 0, 1)
-            self.display.text(packet_text, 25, 0, 1)
+            self.write_to_display('RX: ', 0, 0)
+            self.write_to_display(packet_text, 25, 0)
             self.watchOutput.add_message('unknown', packet_text)
 
         self.display.show()
 
     def run(self):
         print('run Watcher.py')
-        self.display.text('ready.', 15, 20, 1)
+        self.write_to_display('ready.', 15, 20)
         self.display.show()
 
         while True:
