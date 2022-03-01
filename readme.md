@@ -110,10 +110,10 @@ A second module in this project is the watcher. With the watcher, you can watch 
 
 *You cannot run the Watcher from an external console, because it needs a display to show the incoming messages.*
 
-## Autorun watcher on start
+## Add the watcher to autostart
 
-    $ sudo crontab -e
+    $ sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
 
-Now add the following line
+Now add the following line before the screensaver line:
 
-    @reboot sh /home/pi/raspberry-scratch-server/system/launcher.sh > /home/pi/watcher.log 2>&1
+    @/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py > /home/pi/watcher.log 2>&1
