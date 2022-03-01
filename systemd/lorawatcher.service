@@ -3,14 +3,23 @@
  After=multi-user.target
 
  [Service]
- Type=simple
+ Type=idle
  Environment="DISPLAY=:0"
  Environment="XAUTHORITY=/home/pi/.Xauthority"
+
+ SupplementaryGroups=video input dialout spi i2c gpio
+
+ StandardInput=tty
+ StandardOutput=journal
+ StandardError=journal
+
+ ExecStartPre=/bin/chvt8
  ExecStart=/usr/bin/python3 /home/pi/raspberry-scratch-server/Watcher.py > /home/pi/watcher.log
+
  KillMode=process
  SendSIGHUP=no
  Restart=always
  RestartSec=10
 
  [Install]
- WantedBy=graphical.target
+ WantedBy=multi-user.target
