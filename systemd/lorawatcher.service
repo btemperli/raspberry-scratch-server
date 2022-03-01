@@ -10,7 +10,7 @@
  KillMode=process
  SendSIGHUP=no
  Restart=always
- RestartSec=5
+ RestartSec=10
 
  [Install]
  WantedBy=graphical.target
