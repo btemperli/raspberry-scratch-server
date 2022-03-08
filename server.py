@@ -140,7 +140,8 @@ class Server:
         self.log = Logger()
         self.display = Display()
         self.lora = LoRa(self.log)
-        self.display.print('server up and running')
+        self.display.print('server class initialized')
+        self.log.print('server class initialized')
         self.websocket_clients = set()
         self.start()
 
@@ -198,10 +199,22 @@ class Server:
                 self.handle_socket_connection,
                 os.environ.get('server-ip'),
                 os.environ.get('server-port'))
-            self.log.print(f'Started socket server: {socket_server} ...')
+
+            # print some running data
+            self.log.print(f'Started socket server: {socket_server}')
+            self.log.print('server-ip: ' + os.environ.get('server-ip'))
+            self.log.print('server-port: ' + os.environ.get('server-port'))
+
             self.loop.run_until_complete(socket_server)
             self.loop.run_until_complete(self.broadcast_random_number(self.loop))
             self.loop.run_forever()
+
+        except Exception as e:
+            self.log.print(e)
+            self.log.print(traceback.format_exc())
+
+        except:
+            self.log.print(sys.exc_info()[0])
 
         finally:
             self.loop.close()
