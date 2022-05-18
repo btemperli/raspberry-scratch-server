@@ -1,6 +1,7 @@
 import asyncio
 import json
 import random
+import time
 import traceback
 import websockets
 import dotenv
@@ -8,6 +9,7 @@ import os
 import signal
 import sys
 from getmac import get_mac_address
+from threading import Thread
 
 
 # handle exit command comming from bash-script.
@@ -26,6 +28,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "handle_exit_signal":
 dotenv.load_dotenv()
 
 
+# Logger for all different kind of messages.
 class Logger:
     def __init__(self):
         self.debug = True
@@ -35,12 +38,17 @@ class Logger:
             print(message, flush=True)
 
 
-class LoRa:
+# Class to connect with the LoRaNetwork.
+class LoRa(Thread):
     def __init__(self, logger):
+        # handle thread
+        super().__init__()
+
         self.logger = logger
         self.environment = os.environ.get('environment')
         self.available_lora = self.environment == 'raspberry'
         self.prev_packet = None
+        self.messages_received = []
 
         if self.available_lora:
             from digitalio import DigitalInOut
@@ -65,24 +73,52 @@ class LoRa:
             # rfm9x.coding_rate = 6
             # rfm9x.spreading_factor = 8
             # rfm9x.enable_crc = True
+        else:
+            self.eth_mac = 'localhost'
+            self.logger.print('found no mac address, using: ' + self.eth_mac)
 
-    def read(self):
+    # Thread-function to run parallel.
+    def run(self):
+        while True:
+            self.read_from_lora()
+
+    # Read from the LoRa-network
+    # ---
+    # Saves all the messages to a local array, where they can be read out of.
+    def read_from_lora(self):
         if not self.available_lora:
-            self.logger.print('Nothing to receive on a computer...')
-            return None
+            # On a computer: add randomly messages from time to time "upcoming from the network"
+            number = random.randint(0, 200)
+            time.sleep(1)
+            if number > 190:
+                packet = ('computer says randomly ' + str(number)).encode()
+            else:
+                return
 
-        packet = self.rfm9x.receive()
+        else:
+            packet = self.rfm9x.receive()
+
         if packet is None:
             # do nothing, no message read.
-            return None
+            return
 
         self.logger.print('------')
         self.logger.print(packet)
         self.prev_packet = packet
         packet_text = str(self.prev_packet, "utf-8")
         self.logger.print(packet_text)
-        return packet_text
+        self.messages_received.append(packet_text)
+        return
 
+    # Get the latest message coming from the network.
+    def get_latest_message(self):
+        if len(self.messages_received):
+            return self.messages_received.pop(0)
+
+        else:
+            return None
+
+    # Send a message through LoRaWan to the network.
     def send(self, message):
         message_data = bytes("[" + self.eth_mac + "]"+message, encoding="utf-8")
 
@@ -94,6 +130,7 @@ class LoRa:
         self.rfm9x.send(message_data)
 
 
+# Handle the mini-display of the LoRa-Board.
 class Display:
     def __init__(self):
         self.environment = os.environ.get('environment')
@@ -143,6 +180,11 @@ class Server:
         self.display.print('server class initialized')
         self.log.print('server class initialized')
         self.websocket_clients = set()
+
+        # prepare threaded lora-class
+        self.lora.setDaemon(True)
+        self.lora.start()
+
         self.start()
 
     def handle_json_message(self, json_message):
@@ -158,6 +200,10 @@ class Server:
             self.log.print('problems with json input...')
             self.log.print(traceback.format_exc())
 
+    # Handle socket connections
+    # ---
+    # Save all connections to our self.websocket_clients
+    # Try to handle all incoming messages through the websocket client
     async def handle_socket_connection(self, websocket, path):
         self.websocket_clients.add(websocket)
         self.log.print(f'New connection from: {websocket.remote_address} ({len(self.websocket_clients)} total)')
@@ -184,7 +230,19 @@ class Server:
             self.log.print(f'Disconnected from socket [{id(websocket)}]...')
             self.websocket_clients.remove(websocket)
 
-    async def broadcast_random_number(self, loop):
+    # Check the LoRa-Class for new incoming messages
+    async def broadcast_lora_message(self):
+
+        while True:
+            message = self.lora.get_latest_message()
+            if message:
+                for c in self.websocket_clients:
+                    self.log.print(f'Sending [{message}] to socket [{id(c)}]')
+                    await c.send(message)
+            await asyncio.sleep(5)
+
+    # Send randomly numbers to the websocket-connections.
+    async def broadcast_random_number(self):
         """Keeps sending a random # to each connected websocket client"""
         while True:
             for c in self.websocket_clients:
@@ -193,6 +251,7 @@ class Server:
                 await c.send(num)
             await asyncio.sleep(10)
 
+    # Starting the server, running async-tasks.
     def start(self):
         try:
             socket_server = websockets.serve(
@@ -205,8 +264,15 @@ class Server:
             self.log.print('server-ip: ' + os.environ.get('server-ip'))
             self.log.print('server-port: ' + os.environ.get('server-port'))
 
+            self.log.print('start run_until_complete on the socket_server.')
             self.loop.run_until_complete(socket_server)
-            self.loop.run_until_complete(self.broadcast_random_number(self.loop))
+
+            self.log.print('start run_until_complete on gathering the rest.')
+            self.loop.run_until_complete(asyncio.gather(
+                # self.broadcast_random_number(),
+                self.broadcast_lora_message(),
+            ))
+
             self.loop.run_forever()
 
         except Exception as e:
@@ -221,9 +287,5 @@ class Server:
             self.log.print(f"Successfully shutdown [{self.loop}].")
 
 
-def server():
-    Server()
-
-
 if __name__ == '__main__':
-    server()
+    Server()
