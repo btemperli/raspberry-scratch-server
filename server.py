@@ -237,8 +237,8 @@ class Server:
 
     # Check the LoRa-Class for new incoming messages
     async def broadcast_lora_message(self):
-        self.log.print('keep checking for lora messages')
         while True:
+            self.log.print('keep checking for lora messages')
             message = self.lora.get_latest_message()
             if message:
                 for c in self.websocket_clients:
