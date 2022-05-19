@@ -49,6 +49,7 @@ class LoRa(Thread):
         self.available_lora = self.environment == 'raspberry'
         self.prev_packet = None
         self.messages_received = []
+        self.check_for_messages = True
 
         if self.available_lora:
             from digitalio import DigitalInOut
@@ -80,7 +81,8 @@ class LoRa(Thread):
     # Thread-function to run parallel.
     def run(self):
         while True:
-            self.read_from_lora()
+            if self.check_for_messages:
+                self.read_from_lora()
 
     # Read from the LoRa-network
     # ---
@@ -120,6 +122,7 @@ class LoRa(Thread):
 
     # Send a message through LoRaWan to the network.
     def send(self, message):
+        self.check_for_messages = False
         message_data = bytes("[" + self.eth_mac + "]"+message, encoding="utf-8")
 
         if not self.available_lora:
@@ -129,6 +132,7 @@ class LoRa(Thread):
 
         self.logger.print('send text to LoRaWAN: ' + message)
         self.rfm9x.send(message_data)
+        self.check_for_messages = True
 
 
 # Handle the mini-display of the LoRa-Board.
@@ -181,6 +185,10 @@ class Server:
         self.display.print('server class initialized')
         self.log.print('server class initialized')
         self.websocket_clients = set()
+
+        # prepare threaded lora-class
+        self.lora.setDaemon(True)
+        self.lora.start()
 
         self.start()
 
@@ -248,11 +256,6 @@ class Server:
                 await c.send(num)
             await asyncio.sleep(10)
 
-    async def run_lora(self):
-        # prepare threaded lora-class
-        self.lora.setDaemon(True)
-        self.lora.start()
-
     # Starting the server, running async-tasks.
     def start(self):
         try:
@@ -271,7 +274,6 @@ class Server:
 
             self.log.print('start run_until_complete on gathering the rest.')
             self.loop.run_until_complete(asyncio.gather(
-                self.run_lora(),
                 # self.broadcast_random_number(),
                 self.broadcast_lora_message(),
             ))
