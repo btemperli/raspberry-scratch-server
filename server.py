@@ -182,10 +182,6 @@ class Server:
         self.log.print('server class initialized')
         self.websocket_clients = set()
 
-        # prepare threaded lora-class
-        self.lora.setDaemon(True)
-        self.lora.start()
-
         self.start()
 
     def handle_json_message(self, json_message):
@@ -252,6 +248,11 @@ class Server:
                 await c.send(num)
             await asyncio.sleep(10)
 
+    async def run_lora(self):
+        # prepare threaded lora-class
+        self.lora.setDaemon(True)
+        self.lora.start()
+
     # Starting the server, running async-tasks.
     def start(self):
         try:
@@ -270,13 +271,12 @@ class Server:
 
             self.log.print('start run_until_complete on gathering the rest.')
             self.loop.run_until_complete(asyncio.gather(
+                self.run_lora(),
                 # self.broadcast_random_number(),
                 self.broadcast_lora_message(),
             ))
 
-            self.log.print('start run_forever()')
             self.loop.run_forever()
-            self.log.print('run after run_forever()')
 
         except Exception as e:
             self.log.print(e)
