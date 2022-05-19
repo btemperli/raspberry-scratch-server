@@ -32,6 +32,7 @@ class WatchOutput:
         self.pg = pygame
         self.pg.init()
         self.pg.font.init()
+        self.pg.mouse.set_visible(False)
 
         self.screen = self.pg.display.set_mode((0, 0), self.pg.FULLSCREEN)
         self.display_info = pygame.display.Info()
