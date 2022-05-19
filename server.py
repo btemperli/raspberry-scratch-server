@@ -95,6 +95,7 @@ class LoRa(Thread):
     # Saves all the messages to a local array, where they can be read out of.
     def read_from_lora(self):
         global received_messages
+
         if not self.available_lora:
             # On a computer: add randomly messages from time to time "upcoming from the network"
             number = random.randint(0, 200)
@@ -127,18 +128,18 @@ class LoRa(Thread):
 
         self.prev_packet = packet_text
         self.logger.print(packet_text)
-        with data_lock:
-            received_messages.append(packet_text)
+        # with data_lock:
+        received_messages.append(packet_text)
         return
 
     # Get the latest message coming from the network.
     def get_latest_message(self):
         global received_messages
-        with data_lock:
-            if len(received_messages):
-                return received_messages.pop(0)
-            else:
-                return None
+        # with data_lock:
+        if len(received_messages):
+            return received_messages.pop(0)
+        else:
+            return None
 
     # Send a message through LoRaWan to the network.
     def send(self, message):
