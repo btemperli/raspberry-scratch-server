@@ -129,7 +129,7 @@ class LoRa(Thread):
     # Get the latest message coming from the network.
     def get_latest_message(self):
         if len(self.received_messages):
-            message = self.received_messages.index(0)
+            message = self.received_messages[0]
             print(message)
             self.received_messages.pop(0)
             return message
