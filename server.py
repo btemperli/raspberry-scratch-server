@@ -237,14 +237,14 @@ class Server:
 
     # Check the LoRa-Class for new incoming messages
     async def broadcast_lora_message(self):
-
+        self.log.print('keep checking for lora messages')
         while True:
             message = self.lora.get_latest_message()
             if message:
                 for c in self.websocket_clients:
                     self.log.print(f'Sending [{message}] to socket [{id(c)}]')
                     await c.send(message)
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
 
     # Send randomly numbers to the websocket-connections.
     async def broadcast_random_number(self):
