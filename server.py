@@ -109,7 +109,7 @@ class LoRa(Thread):
         # self.logger.print(packet)
 
         # @see Watcher: def handle_packet(self, packet)
-        packet_text = str(packet[4:], "utf-8")
+        packet_text = str(packet, "utf-8")
         pattern = r'\[([a-z0-9:])*\]'
         matches = re.match(pattern, packet_text)
 
