@@ -29,6 +29,8 @@ if len(sys.argv) > 1 and sys.argv[1] == "handle_exit_signal":
 # load .env file
 dotenv.load_dotenv()
 
+received_messages = []
+
 
 # Logger for all different kind of messages.
 class Logger:
@@ -42,8 +44,6 @@ class Logger:
 
 # Class to connect with the LoRaNetwork.
 class LoRa(Thread):
-
-    received_messages = []
 
     def __init__(self, logger):
         # handle thread
@@ -92,6 +92,7 @@ class LoRa(Thread):
     # ---
     # Saves all the messages to a local array, where they can be read out of.
     def read_from_lora(self):
+        global received_messages
         if not self.available_lora:
             # On a computer: add randomly messages from time to time "upcoming from the network"
             number = random.randint(0, 200)
@@ -124,13 +125,16 @@ class LoRa(Thread):
 
         self.prev_packet = packet_text
         self.logger.print(packet_text)
-        self.received_messages.append(packet_text)
+        received_messages.append(packet_text)
+        print(received_messages)
         return
 
     # Get the latest message coming from the network.
     def get_latest_message(self):
-        if len(self.received_messages):
-            return self.received_messages.pop(0)
+        global received_messages
+        print(received_messages)
+        if len(received_messages):
+            return received_messages.pop(0)
         else:
             return None
 
