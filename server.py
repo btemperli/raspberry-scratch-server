@@ -255,9 +255,7 @@ class Server:
     async def broadcast_lora_message(self):
         while True:
             message = self.lora.get_latest_message()
-            print('broadcast: get message - ' + str(message))
             if message:
-                print(self.websocket_clients)
                 for c in self.websocket_clients:
                     self.log.print(f'Sending [{message}] to socket [{id(c)}]')
                     await c.send(message)
