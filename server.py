@@ -121,10 +121,11 @@ class LoRa(Thread):
     # Send a message through LoRaWan to the network.
     def send(self, message):
         message_data = bytes("[" + self.eth_mac + "]"+message, encoding="utf-8")
+        self.logger.print('send text: ' + message)
 
         if not self.available_lora:
-            self.logger.print('send text: ' + message)
-            self.logger.print('send bytes: ' + str(message_data))
+            self.logger.print('pretend to send text: ' + message)
+            self.logger.print('pretend to send bytes: ' + str(message_data))
             return
 
         self.rfm9x.send(message_data)
