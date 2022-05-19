@@ -259,7 +259,7 @@ class Server:
                 for c in self.websocket_clients:
                     self.log.print(f'Sending [{message}] to socket [{id(c)}]')
                     await c.send(message)
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
 
     # Send randomly numbers to the websocket-connections.
     async def broadcast_random_number(self):
