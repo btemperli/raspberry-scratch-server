@@ -200,14 +200,16 @@ class WatchOutput:
                                      field[3] - self.box_margin * 2 - self.header_height)
             self.pg.draw.rect(self.screen, self.color_light, field_box)
 
+            messages_index = len(self.message_dict[field[4]])
             for message in reversed(self.message_dict[field[4]]):
-                text = self.small_font.render(message, True, self.color_dark)
+                text = self.small_font.render(str(messages_index) + ' ' + message, True, self.color_dark)
                 text_box = self.pg.Rect(field[0] + self.box_margin,
                                         start + 2,
                                         field[2] - self.box_margin * 2,
                                         self.header_height)
                 self.screen.blit(text, text_box)
                 start += self.header_height
+                messages_index -= 1
 
                 # reached end of the box?
                 if start + self.header_height > field[1] + field[3]:
