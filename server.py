@@ -6,6 +6,7 @@ import traceback
 import websockets
 import dotenv
 import os
+import re
 import signal
 import sys
 from getmac import get_mac_address
@@ -105,9 +106,20 @@ class LoRa(Thread):
             return
 
         self.logger.print('------')
-        self.logger.print(packet)
-        self.prev_packet = packet
-        packet_text = str(self.prev_packet, "utf-8")
+        # self.logger.print(packet)
+
+        # @see Watcher: def handle_packet(self, packet)
+        packet_text = str(packet[4:], "utf-8")
+        pattern = r'\[([a-z0-9:])*\]'
+        matches = re.match(pattern, packet_text)
+
+        # Address is available in the packet
+        if matches:
+            packet_text = re.sub(pattern, '', packet_text)
+        else:
+            packet_text = str(self.prev_packet, "utf-8")
+
+        self.prev_packet = packet_text
         self.logger.print(packet_text)
         self.messages_received.append(packet_text)
         return

@@ -60,9 +60,6 @@ class WatchLora(Thread):
         # identifier: Automatically set to the sequence number when send_with_ack() used.
         #
         # flags = packet[3] // default: x00
-        #
-        # todo: check if we should send mac-address from server as first entry and read it out here.
-        # or better: the kids need to define this by themselves and sending it with the message.
 
         header = packet[:4]
         header_text = str(header, 'utf-16')
