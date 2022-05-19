@@ -1,6 +1,7 @@
 import asyncio
 import json
 import random
+import threading
 import time
 import traceback
 import websockets
@@ -11,7 +12,9 @@ import signal
 import sys
 from getmac import get_mac_address
 from threading import Thread
+from threading import Lock
 
+data_lock = Lock()
 
 # handle exit command comming from bash-script.
 # https://stackoverflow.com/a/24574672/2241151
@@ -121,7 +124,8 @@ class LoRa(Thread):
 
         self.prev_packet = packet_text
         self.logger.print(packet_text)
-        self.messages_received.append(packet_text)
+        with data_lock:
+            self.messages_received.append(packet_text)
         return
 
     # Get the latest message coming from the network.
