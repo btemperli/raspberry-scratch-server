@@ -12,10 +12,6 @@ import signal
 import sys
 from getmac import get_mac_address
 from threading import Thread
-from threading import Lock
-
-data_lock = Lock()
-received_messages = []
 
 
 # handle exit command comming from bash-script.
@@ -46,6 +42,9 @@ class Logger:
 
 # Class to connect with the LoRaNetwork.
 class LoRa(Thread):
+
+    received_messages = []
+
     def __init__(self, logger):
         # handle thread
         super().__init__()
@@ -54,7 +53,6 @@ class LoRa(Thread):
         self.environment = os.environ.get('environment')
         self.available_lora = self.environment == 'raspberry'
         self.prev_packet = None
-        # self.messages_received = []
         self.check_for_messages = True
 
         if self.available_lora:
@@ -94,8 +92,6 @@ class LoRa(Thread):
     # ---
     # Saves all the messages to a local array, where they can be read out of.
     def read_from_lora(self):
-        global received_messages
-
         if not self.available_lora:
             # On a computer: add randomly messages from time to time "upcoming from the network"
             number = random.randint(0, 200)
@@ -128,16 +124,13 @@ class LoRa(Thread):
 
         self.prev_packet = packet_text
         self.logger.print(packet_text)
-        # with data_lock:
-        received_messages.append(packet_text)
+        self.received_messages.append(packet_text)
         return
 
     # Get the latest message coming from the network.
     def get_latest_message(self):
-        global received_messages
-        # with data_lock:
-        if len(received_messages):
-            return received_messages.pop(0)
+        if len(self.received_messages):
+            return self.received_messages.pop(0)
         else:
             return None
 
