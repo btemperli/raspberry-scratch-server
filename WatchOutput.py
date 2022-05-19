@@ -203,7 +203,7 @@ class WatchOutput:
 
             messages_index = len(self.message_dict[field[4]])
             for message in reversed(self.message_dict[field[4]]):
-                text = self.small_font.render(str(messages_index) + ' ' + message, True, self.color_dark)
+                text = self.small_font.render('[' + str(messages_index) + ']  ' + message, True, self.color_dark)
                 text_box = self.pg.Rect(field[0] + self.box_margin,
                                         start + 2,
                                         field[2] - self.box_margin * 2,
