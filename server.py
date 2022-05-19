@@ -121,13 +121,13 @@ class LoRa(Thread):
     # Send a message through LoRaWan to the network.
     def send(self, message):
         message_data = bytes("[" + self.eth_mac + "]"+message, encoding="utf-8")
-        self.logger.print('send text: ' + message)
 
         if not self.available_lora:
             self.logger.print('pretend to send text: ' + message)
             self.logger.print('pretend to send bytes: ' + str(message_data))
             return
 
+        self.logger.print('send text to LoRaWAN: ' + message)
         self.rfm9x.send(message_data)
 
 
@@ -240,7 +240,7 @@ class Server:
                 for c in self.websocket_clients:
                     self.log.print(f'Sending [{message}] to socket [{id(c)}]')
                     await c.send(message)
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
 
     # Send randomly numbers to the websocket-connections.
     async def broadcast_random_number(self):
@@ -274,7 +274,9 @@ class Server:
                 self.broadcast_lora_message(),
             ))
 
+            self.log.print('start run_forever()')
             self.loop.run_forever()
+            self.log.print('run after run_forever()')
 
         except Exception as e:
             self.log.print(e)
