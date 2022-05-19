@@ -1,7 +1,6 @@
 import asyncio
 import json
 import random
-import threading
 import time
 import traceback
 import websockets
@@ -125,14 +124,13 @@ class LoRa(Thread):
         self.prev_packet = packet_text
         self.logger.print(packet_text)
         self.received_messages.append(packet_text)
-        print(self.received_messages)
         return
 
     # Get the latest message coming from the network.
     def get_latest_message(self):
-        print(self.received_messages)
         if len(self.received_messages):
-            message = self.received_messages[0]
+            message = self.received_messages.index(0)
+            print(message)
             self.received_messages.pop(0)
             return message
         else:
