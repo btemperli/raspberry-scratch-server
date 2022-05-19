@@ -130,7 +130,7 @@ class LoRa(Thread):
     def get_latest_message(self):
         if len(self.received_messages):
             message = self.received_messages[0]
-            print(message)
+            print('received message: ' + message)
             self.received_messages.pop(0)
             return message
         else:
@@ -254,9 +254,10 @@ class Server:
     # Check the LoRa-Class for new incoming messages
     async def broadcast_lora_message(self):
         while True:
-            self.log.print('keep checking for lora messages')
             message = self.lora.get_latest_message()
+            print('broadcast: get message - ' + message)
             if message:
+                print(self.websocket_clients)
                 for c in self.websocket_clients:
                     self.log.print(f'Sending [{message}] to socket [{id(c)}]')
                     await c.send(message)
