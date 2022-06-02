@@ -97,6 +97,7 @@ class LoRa(Thread):
             time.sleep(1)
             if number > 190:
                 packet = ('computer says randomly ' + str(number)).encode()
+                print('packet created')
             else:
                 return
 
@@ -118,8 +119,6 @@ class LoRa(Thread):
         # Address is available in the packet
         if matches:
             packet_text = re.sub(pattern, '', packet_text)
-        else:
-            packet_text = str(self.prev_packet, "utf-8")
 
         self.prev_packet = packet_text
         self.logger.print(packet_text)
