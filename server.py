@@ -81,6 +81,11 @@ class LoRa(Thread):
             self.eth_mac = 'localhost'
             self.logger.print('found no mac address, using: ' + self.eth_mac)
 
+    def add_lora_message(self, message):
+        self.received_messages.append(message)
+        # remove duplicates from received message:
+        self.received_messages = list(dict.fromkeys(self.received_messages))
+
     # Thread-function to run parallel.
     def run(self):
         while True:
@@ -122,7 +127,7 @@ class LoRa(Thread):
 
         self.prev_packet = packet_text
         self.logger.print(packet_text)
-        self.received_messages.append(packet_text)
+        self.add_lora_message(packet_text)
         return
 
     # Get the latest message coming from the network.
