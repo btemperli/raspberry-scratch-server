@@ -186,6 +186,24 @@ class WatchOutput:
         self.message_dict[id] = []
         self.__update_grid()
 
+    # Check text length
+    # -----------------
+    # If the text is short enough to be displayed in the box, display it.
+    # Otherwise, shorten the text until the shortened text can be displayed in the box.
+    # In this case, add a "…" at the end of the text.
+    def __check_text_length(self, text, box_width):
+        width, height = self.small_font.size(text)
+        if width < box_width:
+            return text
+
+        text = text + "…"
+        # a do-while-loop in python
+        while True:
+            text = text[:-2] + "…"
+            width, height = self.small_font.size(text)
+            if width < box_width:
+                return text
+
     # display messages
     # ----------------
     # show all messages on the screen
@@ -203,7 +221,8 @@ class WatchOutput:
 
             messages_index = len(self.message_dict[field[4]])
             for message in reversed(self.message_dict[field[4]]):
-                text = self.small_font.render('[' + str(messages_index) + ']  ' + message, True, self.color_dark)
+                text_string = self.__check_text_length('[' + str(messages_index) + ']  ' + message, field[2] - self.box_margin * 2)
+                text = self.small_font.render(text_string, True, self.color_dark)
                 text_box = self.pg.Rect(field[0] + self.box_margin,
                                         start + 2,
                                         field[2] - self.box_margin * 2,
