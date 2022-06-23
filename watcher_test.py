@@ -30,8 +30,16 @@ class WatchUpdater(Thread):
             self.wo.add_message('192.168.1.21', str(index) + ': lorem ipsum')
             self.wo.add_message('192.168.1.22', str(index) + ': lorem ipsum')
             self.wo.add_message('192.168.1.23', str(index) + ': lorem ipsum')
-
             index += 1
+        # self.wo.add_message('dc:a6:32:77:77:f5', 'hello')
+        # self.wo.add_message('dc:a6:32:77:77:f5', 'hello')
+        # self.wo.add_message('dc:a6:32:c6:6d:ce', 'A-B-Hello World!')
+        # self.wo.add_message('dc:a6:32:c6:6d:ce', 'A-B-Hello World!')
+        # self.wo.add_message('dc:a6:32:c6:6d:ce', 'A-B-Hello World!')
+        # self.wo.add_message('dc:a6:32:c6:6d:ce', 'A-B-Hello World!')
+        # self.wo.add_message('dc:a6:32:05:7f:05', 'test 1')
+        # self.wo.add_message('dc:a6:32:05:7f:05', 'test 2')
+        # self.wo.add_message('dc:a6:32:05:7f:05', 'test 3')
 
 
 class Manager:

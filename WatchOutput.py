@@ -35,6 +35,7 @@ class WatchOutput:
         self.pg.mouse.set_visible(False)
 
         self.screen = self.pg.display.set_mode((0, 0), self.pg.FULLSCREEN)
+        # self.screen = self.pg.display.set_mode((1000, 480), self.pg.SHOWN)
         self.display_info = pygame.display.Info()
 
         self.pg.display.set_caption('LoRaWatcher')
